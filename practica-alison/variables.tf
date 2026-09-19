@@ -9,3 +9,6 @@ variable "cidr_publica" {
   type = string 
   default = "10.10.1.0/24" 
 }
+
+variable "zona"          { default = "us-central1-a" }
+variable "tipo_maquina"  { default = "e2-micro" }
