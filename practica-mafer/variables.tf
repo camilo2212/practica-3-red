@@ -1,6 +1,6 @@
 # variables.tf
 variable "proyecto"     { default = "maquinavirtual-507221" }
-variable "prefijo"      { default = "mafer-vpc" }
+variable "prefijo"      { default = "mafer" }
 variable "region"       { default = "us-central1" }
 variable "cidr_publica" { default = "10.10.1.0/24" }
 variable "zona"          { default = "us-central1-a" }
