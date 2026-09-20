@@ -24,6 +24,13 @@ resource "google_compute_subnetwork" "publica" {
   network       = google_compute_network.vpc.id
 }
 
+# Subred de datos: sin salida directa, solo alcanzable desde dentro de la VPC.
+resource "google_compute_subnetwork" "datos" {
+  name          = "${var.prefijo}-sub-datos"
+  ip_cidr_range = var.cidr_privada
+  region        = var.region
+  network       = google_compute_network.vpc.id
+}
 
 # Máquina de aplicación
 resource "google_compute_instance" "app" {
@@ -44,6 +51,27 @@ resource "google_compute_instance" "app" {
   }
 
   metadata_startup_script = file("${path.module}/arranque.sh")
+}
+
+# Máquina de datos: sin access_config, no tiene IP pública.
+resource "google_compute_instance" "datos" {
+  name         = "${var.prefijo}-datos"
+  machine_type = var.tipo_maquina
+  zone         = var.zona
+  tags         = ["datos"]
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+    subnetwork = google_compute_subnetwork.datos.id
+    # Sin access_config: no es alcanzable desde internet.
+  }
+
+  metadata_startup_script = file("${path.module}/arranque-datos.sh")
 }
 
 resource "google_compute_firewall" "app_http" {
@@ -72,4 +100,33 @@ resource "google_compute_firewall" "ssh_iap" {
   # a través de IAP. Es el único origen autorizado para el 22.
   source_ranges = ["35.235.240.0/20"]
   target_tags   = ["app"]
+}
+# Cloud Router: necesario como base para el NAT.
+resource "google_compute_router" "router" {
+  name    = "${var.prefijo}-router"
+  region  = var.region
+  network = google_compute_network.vpc.id
+}
+
+# Cloud NAT: permite que la máquina de datos salga a internet
+# (para instalar paquetes) sin tener IP pública ni ser alcanzable desde afuera.
+resource "google_compute_router_nat" "nat" {
+  name                               = "${var.prefijo}-nat"
+  router                             = google_compute_router.router.name
+  region                             = var.region
+  nat_ip_allocate_option             = "AUTO_ONLY"
+  source_subnetwork_ip_ranges_to_nat = "ALL_SUBNETWORKS_ALL_IP_RANGES"
+}
+# Regla interna: solo la app (por etiqueta) puede hablarle a datos.
+resource "google_compute_firewall" "datos_interno" {
+  name    = "${var.prefijo}-permitir-datos-interno"
+  network = google_compute_network.vpc.name
+
+  allow {
+    protocol = "tcp"
+    ports    = ["80"]
+  }
+
+  source_tags = ["app"]
+  target_tags = ["datos"]
 }
