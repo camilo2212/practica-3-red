@@ -52,7 +52,7 @@ resource "google_compute_firewall" "app_http" {
 
   allow {
     protocol = "tcp"
-    ports    = ["<?>"]
+    ports    = ["80"]
   }
 
   source_ranges = ["0.0.0.0/0"]
