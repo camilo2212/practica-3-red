@@ -23,3 +23,25 @@ resource "google_compute_subnetwork" "publica" {
   region        = var.region
   network       = google_compute_network.vpc.id
 }
+
+
+# Máquina de aplicación
+resource "google_compute_instance" "app" {
+  name         = "${var.prefijo}-app"
+  machine_type = var.tipo_maquina
+  zone         = var.zona
+  tags         = ["app"]
+
+  boot_disk {
+    initialize_params {
+      image = "debian-cloud/debian-12"
+    }
+  }
+
+  network_interface {
+    subnetwork = google_compute_subnetwork.publica.id
+    access_config {}
+  }
+
+  metadata_startup_script = file("${path.module}/arranque.sh")
+}
