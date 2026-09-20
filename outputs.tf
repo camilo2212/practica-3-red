@@ -12,3 +12,8 @@ output "ip_publica_app" {
   value       = google_compute_instance.app.network_interface[0].access_config[0].nat_ip
   description = "IP pública de la máquina de aplicación"
 }
+
+output "ip_interna_datos" {
+  value       = google_compute_instance.datos.network_interface[0].network_ip
+  description = "IP interna de la máquina de datos (no pública)"
+}
