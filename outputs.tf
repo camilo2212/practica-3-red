@@ -7,3 +7,8 @@ output "subred_publica" {
   value       = google_compute_subnetwork.publica.self_link
   description = "identificador completo de la subred de aplicación"
 }
+
+output "ip_publica_app" {
+  value       = google_compute_instance.app.network_interface[0].access_config[0].nat_ip
+  description = "IP pública de la máquina de aplicación"
+}
