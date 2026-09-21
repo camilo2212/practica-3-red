@@ -1,4 +1,3 @@
-cat > arranque.sh << 'EOF'
 #!/bin/bash
 apt-get update -y
 apt-get install -y nginx
@@ -16,4 +15,3 @@ cat > /var/www/html/index.html <<HTML
 </body>
 </html>
 HTML
-EOF
