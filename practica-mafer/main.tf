@@ -43,7 +43,9 @@ resource "google_compute_instance" "app" {
     access_config {}
   }
 
-  metadata_startup_script = file("${path.module}/arranque.sh")
+    metadata_startup_script = templatefile("${path.module}/arranque.sh", {
+    ip_datos = google_compute_instance.datos.network_interface[0].network_ip
+  })
 }
 
 resource "google_compute_firewall" "app_http" {
