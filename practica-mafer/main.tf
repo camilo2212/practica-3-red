@@ -43,7 +43,9 @@ resource "google_compute_instance" "app" {
     access_config {}
   }
 
-  metadata_startup_script = file("${path.module}/arranque.sh")
+    metadata_startup_script = templatefile("${path.module}/arranque.sh", {
+    ip_datos = google_compute_instance.datos.network_interface[0].network_ip
+  })
 }
 
 resource "google_compute_firewall" "app_http" {
@@ -71,5 +73,5 @@ resource "google_compute_firewall" "ssh_iap" {
   # 35.235.240.0/20 es el rango desde el que Google reenvía SSH
   # a través de IAP. Es el único origen autorizado para el 22.
   source_ranges = ["35.235.240.0/20"]
-  target_tags   = ["http-server"]
+  target_tags   = ["http-server", "datos"]
 }

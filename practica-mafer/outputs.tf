@@ -8,3 +8,8 @@ output "subred_publica" {
   value       = google_compute_subnetwork.publica.self_link
   description = "Identificador completo de la subred de aplicación"
 }
+
+output "ip_interna_datos" {
+  value       = google_compute_instance.datos.network_interface[0].network_ip
+  description = "IP interna de la máquina de datos"
+}
