@@ -1,4 +1,3 @@
-cat > arranque.sh << 'EOF'
 #!/bin/bash
 apt-get update -y
 apt-get install -y nginx
@@ -10,4 +9,3 @@ cat > /var/www/html/index.html <<HTML
 <p>Servidor de aplicación. IP interna: $INTERNA</p>
 <p>Dato desde la máquina privada: $DATO</p>
 HTML
-EOF
