@@ -73,5 +73,5 @@ resource "google_compute_firewall" "ssh_iap" {
   # 35.235.240.0/20 es el rango desde el que Google reenvía SSH
   # a través de IAP. Es el único origen autorizado para el 22.
   source_ranges = ["35.235.240.0/20"]
-  target_tags   = ["http-server"]
+  target_tags   = ["http-server", "datos"]
 }
